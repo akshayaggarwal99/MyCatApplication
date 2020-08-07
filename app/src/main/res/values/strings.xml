@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">MyApplication</string>
+    <string name="app_name">CatFactsApp</string>
+    <string name="text_sample_fact">The goddess of love, beauty, and fertility in Norse mythology, Freyja was the first cat lady. She is depicted in stories as riding a chariot that was drawn by cats.</string>
 </resources>

@@ -1,9 +1,12 @@
 package com.android.myapplication.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class CatFactModel {
+public class CatFactModel implements Parcelable {
 
     @SerializedName("_id")
     @Expose
@@ -23,6 +26,29 @@ public class CatFactModel {
     @SerializedName("userUpvoted")
     @Expose
     private Object userUpvoted;
+
+    protected CatFactModel(Parcel in) {
+        id = in.readString();
+        text = in.readString();
+        type = in.readString();
+        if (in.readByte() == 0) {
+            upvotes = null;
+        } else {
+            upvotes = in.readInt();
+        }
+    }
+
+    public static final Creator<CatFactModel> CREATOR = new Creator<CatFactModel>() {
+        @Override
+        public CatFactModel createFromParcel(Parcel in) {
+            return new CatFactModel(in);
+        }
+
+        @Override
+        public CatFactModel[] newArray(int size) {
+            return new CatFactModel[size];
+        }
+    };
 
     public String getId() {
         return id;
@@ -70,5 +96,23 @@ public class CatFactModel {
 
     public void setUserUpvoted(Object userUpvoted) {
         this.userUpvoted = userUpvoted;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(id);
+        parcel.writeString(text);
+        parcel.writeString(type);
+        if (upvotes == null) {
+            parcel.writeByte((byte) 0);
+        } else {
+            parcel.writeByte((byte) 1);
+            parcel.writeInt(upvotes);
+        }
     }
 }
