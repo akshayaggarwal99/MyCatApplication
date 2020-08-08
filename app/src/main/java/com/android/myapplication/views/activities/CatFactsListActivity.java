@@ -1,11 +1,14 @@
 package com.android.myapplication.views.activities;
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.android.myapplication.R;
-import com.android.myapplication.models.CatFactModel;
+import com.android.myapplication.persistance.CatFact;
+import com.android.myapplication.utils.Resource;
 import com.android.myapplication.viewmodel.CatFactsListViewModel;
 import com.android.myapplication.views.adapters.CatFactRecyclerViewAdapter;
 import com.android.myapplication.views.base.BaseActivity;
@@ -31,7 +34,7 @@ public class CatFactsListActivity extends BaseActivity {
     ProgressBar progressBar;
 
     CatFactRecyclerViewAdapter catFactRecyclerViewAdapter;
-    List<CatFactModel> catFactModelList = new ArrayList<>();
+    List<CatFact> mCatFacts = new ArrayList<>();
 
     @Override
     protected int setLayoutId() {
@@ -47,65 +50,39 @@ public class CatFactsListActivity extends BaseActivity {
         subscribeObservers();
     }
 
-//    private void testRetrofitRequest() {
-//        CatFactsApi catFactsApi = ServiceGenerator.getCatFactsApi();
-//        Call<AllCatFactsResponse> responseCall = catFactsApi.getCatFacts();
-//
-//        responseCall.enqueue(new Callback<AllCatFactsResponse>() {
-//            @Override
-//            public void onResponse(Call<AllCatFactsResponse> call, Response<AllCatFactsResponse> response) {
-//                Log.d(TAG, "onResponse: server response: " + response.toString());
-//                if (response.code() == 200) {
-//                    Log.d(TAG, "onResponse: " + response.body().toString());
-//                    List<CatFactModel> catFactModels = new ArrayList<>(response.body().getCatFactModels());
-//                    for (CatFactModel catFactModel : catFactModels) {
-//                        Log.d(TAG, "onResponse: " + catFactModel.getText());
-//
-//                    }
-//                } else {
-//                    try {
-//                        Log.d(TAG, "onResponse: " + response.errorBody().string());
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<AllCatFactsResponse> call, Throwable t) {
-//
-//            }
-//        });
-//    }
-//
-//    private void onClick(View view) {
-//        testRetrofitRequest();
-//    }
-
     private void initRecyclerView() {
         catFactRecyclerViewAdapter = new CatFactRecyclerViewAdapter();
         mRecyclerView.setAdapter(catFactRecyclerViewAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         catFactRecyclerViewAdapter.setOnItemClickListener((position, v) -> {
             Intent intent = new Intent(CatFactsListActivity.this, CatFactDetailsActivity.class);
-            intent.putExtra("cat_fact_model", catFactModelList.get(position));
-            intent.putExtra("cat_fact_user_name_model", catFactModelList.get(position).getUser().getUserNameModel());
+            intent.putExtra("cat_fact", mCatFacts.get(position));
             startActivity(intent);
         });
 
     }
 
     private void subscribeObservers() {
-        catFactsListViewModel.getAllCatFacts().observe(this, new Observer<List<CatFactModel>>() {
+
+        catFactsListViewModel.getAllCatFacts().observe(this, new Observer<Resource<List<CatFact>>>() {
             @Override
-            public void onChanged(List<CatFactModel> catFactModels) {
-                progressBar.setVisibility(View.GONE);
-                if (catFactModels != null) {
-                    catFactModelList.clear();
-                    catFactModelList.addAll(catFactModels);
-                    catFactRecyclerViewAdapter.setCatFactModelList(catFactModels);
+            public void onChanged(Resource<List<CatFact>> listResource) {
+                if (listResource != null) {
+                    Log.d(TAG, "onChanged: status " + listResource.status);
+                    if (listResource.status == Resource.Status.SUCCESS && listResource.data != null) {
+                        progressBar.setVisibility(View.GONE);
+                        mCatFacts.clear();
+                        mCatFacts.addAll(listResource.data);
+                        catFactRecyclerViewAdapter.setCatFactModelList(listResource.data);
+                        Log.d(TAG, "onChanged: data " + listResource.data);
+                    } else if (listResource.status == Resource.Status.ERROR && listResource.data != null) {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(CatFactsListActivity.this, listResource.message, Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
+
+
     }
 }

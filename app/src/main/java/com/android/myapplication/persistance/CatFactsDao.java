@@ -17,6 +17,9 @@ public interface CatFactsDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insert(CatFact catFact);
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    long[] insertCatFacts(List<CatFact> catFact);
+
     @Update
     void update(CatFact catFact);
 

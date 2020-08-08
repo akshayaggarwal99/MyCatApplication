@@ -6,11 +6,13 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import androidx.annotation.Nullable;
+
 public class CatFactModel implements Parcelable {
 
     @SerializedName("_id")
     @Expose
-    private String id;
+    private String _id;
     @SerializedName("text")
     @Expose
     private String text;
@@ -18,17 +20,15 @@ public class CatFactModel implements Parcelable {
     @Expose
     private String type;
     @SerializedName("user")
-    @Expose
+    @Expose @Nullable
     private UserModel user;
     @SerializedName("upvotes")
     @Expose
     private Integer upvotes;
-    @SerializedName("userUpvoted")
-    @Expose
-    private Object userUpvoted;
+
 
     protected CatFactModel(Parcel in) {
-        id = in.readString();
+        _id = in.readString();
         text = in.readString();
         type = in.readString();
         if (in.readByte() == 0) {
@@ -50,12 +50,12 @@ public class CatFactModel implements Parcelable {
         }
     };
 
-    public String getId() {
-        return id;
+    public String get_id() {
+        return _id;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void set_id(String _id) {
+        this._id = _id;
     }
 
     public String getText() {
@@ -90,14 +90,6 @@ public class CatFactModel implements Parcelable {
         this.upvotes = upvotes;
     }
 
-    public Object getUserUpvoted() {
-        return userUpvoted;
-    }
-
-    public void setUserUpvoted(Object userUpvoted) {
-        this.userUpvoted = userUpvoted;
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -105,7 +97,7 @@ public class CatFactModel implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(id);
+        parcel.writeString(_id);
         parcel.writeString(text);
         parcel.writeString(type);
         if (upvotes == null) {

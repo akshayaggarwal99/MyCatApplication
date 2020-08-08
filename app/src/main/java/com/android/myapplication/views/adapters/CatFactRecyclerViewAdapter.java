@@ -3,11 +3,10 @@ package com.android.myapplication.views.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.myapplication.R;
-import com.android.myapplication.models.CatFactModel;
+import com.android.myapplication.persistance.CatFact;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,15 +18,15 @@ import butterknife.ButterKnife;
 
 public class CatFactRecyclerViewAdapter extends RecyclerView.Adapter<CatFactRecyclerViewAdapter.CatFactViewHolder> {
 
-    private List<CatFactModel> catFactModelList;
+    private List<CatFact> catFacts;
     private static CatFactRecyclerViewAdapter.MyClickListener myClickListener;
 
     public CatFactRecyclerViewAdapter() {
-        catFactModelList = new ArrayList<>();
+        catFacts = new ArrayList<>();
     }
 
-    public void setCatFactModelList(List<CatFactModel> catFactModelList) {
-        this.catFactModelList = catFactModelList;
+    public void setCatFactModelList(List<CatFact> catFacts) {
+        this.catFacts = catFacts;
         notifyDataSetChanged();
     }
 
@@ -45,14 +44,14 @@ public class CatFactRecyclerViewAdapter extends RecyclerView.Adapter<CatFactRecy
 
     @Override
     public void onBindViewHolder(@NonNull CatFactViewHolder holder, int position) {
-        CatFactModel model = catFactModelList.get(position);
-        holder.tvCatFactItem.setText(model.getText());
+        CatFact catFact = catFacts.get(position);
+        holder.tvCatFactItem.setText(catFact.getText());
     }
 
 
     @Override
     public int getItemCount() {
-        return catFactModelList.size();
+        return catFacts.size();
     }
 
     static class CatFactViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
